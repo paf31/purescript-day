@@ -7,6 +7,10 @@
     "output"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/paf31/purescript-day.git"
+  },
   "dependencies": {
     "purescript-control": "^1.0.0",
     "purescript-exists": "^1.0.0"
