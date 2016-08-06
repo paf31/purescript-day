@@ -1,0 +1,16 @@
+{
+  "name": "purescript-day",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-control": "^1.0.0",
+    "purescript-exists": "^1.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^1.0.0"
+  }
+}
