@@ -1,6 +1,6 @@
 -- | The Day convolution of covariant functors.
 -- |
--- | Based on <https://hackage.haskell.org/package/contravariant/docs/Data-Functor-Day.html>
+-- | Based on <https://hackage.haskell.org/package/kan-extensions/docs/Data-Functor-Day.html>
 
 module Data.Functor.Day
   ( Day
