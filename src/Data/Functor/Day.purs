@@ -12,6 +12,7 @@ module Data.Functor.Day
 import Prelude
 
 import Control.Comonad (class Comonad, class Extend, duplicate, extract)
+import Control.Comonad.Trans (class ComonadTrans)
 import Data.Exists (Exists, mkExists, runExists)
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
@@ -42,3 +43,6 @@ instance extendDay :: (Extend f, Extend g) => Extend (Day f g) where
 
 instance comonadDay :: (Comonad f, Comonad g) => Comonad (Day f g) where
   extract = runDay \get fx gy -> get (extract fx) (extract gy)
+
+instance comonadTrans :: Comonad f => ComonadTrans (Day f) where
+  lower = runDay \get fx gy -> get (extract fx) <$> gy
