@@ -14,6 +14,7 @@ import Prelude
 import Control.Comonad (class Comonad, class Extend, duplicate, extract)
 import Control.Comonad.Trans (class ComonadTrans)
 import Data.Exists (Exists, mkExists, runExists)
+import Data.Tuple (Tuple(..))
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
 
@@ -36,6 +37,17 @@ dap = runDay \get fx gy -> get <$> fx <*> gy
 
 instance functorDay :: Functor (Day f g) where
   map f = runDay \get fx gy -> day (\x y -> f (get x y)) fx gy
+
+instance applyDay :: (Apply f, Apply g) => Apply (Day f g) where
+  apply f g =
+    runDay (\get1 x1 y1 ->
+      runDay (\get2 x2 y2 ->
+        day (\(Tuple a1 a2) (Tuple b1 b2) -> (get1 a1 b1) (get2 a2 b2))
+            (Tuple <$> x1 <*> x2)
+            (Tuple <$> y1 <*> y2)) g) f
+
+instance applicativeDay :: (Applicative f, Applicative g) => Applicative (Day f g) where
+  pure a = day (\_ _ -> a) (pure unit) (pure unit)
 
 instance extendDay :: (Extend f, Extend g) => Extend (Day f g) where
   extend f = map f <<< dup where
