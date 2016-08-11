@@ -7,6 +7,17 @@ module Data.Functor.Day
   , runDay
   , day
   , dap
+  , elimPair
+  , pairDay
+  , hoistDay1
+  , hoistDay2
+  , Hom
+  , runHom
+  , hom
+  , curryHom
+  , uncurryHom
+  , composeHom
+  , evalHom
   ) where
 
 import Prelude
@@ -14,6 +25,7 @@ import Prelude
 import Control.Comonad (class Comonad, class Extend, duplicate, extract)
 import Control.Comonad.Trans (class ComonadTrans)
 import Data.Exists (Exists, mkExists, runExists)
+import Data.Functor.Pairing (type (⋈))
 import Data.Tuple (Tuple(..))
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
@@ -34,6 +46,27 @@ day get fx gy = Day (mkExists (Day2 (mkExists (Day1 get fx gy))))
 -- | Collapse a value of type `Day f f a` whenever `f` is `Applicative`.
 dap :: forall f a. Applicative f => Day f f a -> f a
 dap = runDay \get fx gy -> get <$> fx <*> gy
+
+-- | Eliminate a `Day` convolution of two paired functors.
+elimPair :: forall f g a. f ⋈ g -> Day f g a -> a
+elimPair p = runDay p
+
+-- | Pair two `Day` convolutions when their components pair.
+pairDay :: forall f1 f2 g1 g2. f1 ⋈ f2 -> g1 ⋈ g2 -> Day f1 g1 ⋈ Day f2 g2
+pairDay p1 p2 f day1 day2 =
+  runDay (\g f1 g1 ->
+    runDay (\h f2 g2 ->
+      case p1 Tuple f1 f2, p2 Tuple g1 g2 of
+        Tuple x1 x2, Tuple y1 y2 ->
+          f (g x1 y1) (h x2 y2)) day2) day1
+
+-- | Hoist a natural transformation over the left hand side of a 'Day' convolution.
+hoistDay1 :: forall f g h. (f ~> g) -> Day f h ~> Day g h
+hoistDay1 n = runDay \f x y -> day f (n x) y
+
+-- | Hoist a natural transformation over the left hand side of a 'Day' convolution.
+hoistDay2 :: forall f g h. (f ~> g) -> Day h f ~> Day h g
+hoistDay2 n = runDay \f x y -> day f x (n y)
 
 instance functorDay :: Functor (Day f g) where
   map f = runDay \get fx gy -> day (\x y -> f (get x y)) fx gy
@@ -58,3 +91,34 @@ instance comonadDay :: (Comonad f, Comonad g) => Comonad (Day f g) where
 
 instance comonadTrans :: Comonad f => ComonadTrans (Day f) where
   lower = runDay \get fx gy -> get (extract fx) <$> gy
+
+-- | This is the internal hom in the category of functors with Day
+-- | convolution as the monoidal tensor.
+newtype Hom f g a = Hom (forall r. f (a -> r) -> g r)
+
+infixr 8 type Hom as ~/>
+
+hom :: forall f g a. (forall r. f (a -> r) -> g r) -> Hom f g a
+hom = Hom
+
+runHom :: forall f g a r. Hom f g a -> f (a -> r) -> g r
+runHom (Hom f) = f
+
+instance functorHom :: Functor f => Functor (f ~/> g) where
+  map f d = Hom \fa -> runHom d (map (_ <<< f) fa)
+
+-- | The curry function for the internal hom object `Hom`
+curryHom :: forall f g h. Day f g ~/> h ~> f ~/> g ~/> h
+curryHom (Hom d) = Hom \f -> Hom \g -> d (day (>>>) f g)
+
+-- | The uncurry function for the internal hom object `Hom`
+uncurryHom :: forall f g h. (Functor f, Functor g) => f ~/> g ~/> h ~> Day f g ~/> h
+uncurryHom d = Hom (runDay \f x y -> runHom (runHom d (map (\p q a -> f p a q) x)) (map (#) y))
+
+-- | The composition map for the internal hom object `Hom`
+composeHom :: forall f g h. Functor f => Day (g ~/> h) (f ~/> g) ~> f ~/> h
+composeHom = runDay \f gh fg -> Hom \fa -> runHom gh (runHom fg (map (\g y x -> g (f x y)) fa))
+
+-- | The evaluation map for the internal hom object `Hom`
+evalHom :: forall f g. Functor f => Day (f ~/> g) f ~> g
+evalHom = runDay \f d y -> runHom d (map (flip f) y)
