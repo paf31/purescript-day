@@ -18,6 +18,10 @@ module Data.Functor.Day
   , uncurryHom
   , composeHom
   , evalHom
+  , introHom
+  , introHom'
+  , elimHom
+  , elimHom'
   ) where
 
 import Prelude
@@ -26,6 +30,7 @@ import Control.Comonad (class Comonad, class Extend, duplicate, extract)
 import Control.Comonad.Trans (class ComonadTrans)
 import Data.Exists (Exists, mkExists, runExists)
 import Data.Functor.Pairing (type (⋈))
+import Data.Identity (Identity(..))
 import Data.Tuple (Tuple(..))
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
@@ -114,6 +119,18 @@ curryHom (Hom d) = Hom \f -> Hom \g -> d (day (>>>) f g)
 -- | The uncurry function for the internal hom object `Hom`
 uncurryHom :: forall f g h. (Functor f, Functor g) => f ~/> g ~/> h ~> Day f g ~/> h
 uncurryHom d = Hom (runDay \f x y -> runHom (runHom d (map (\p q a -> f p a q) x)) (map (#) y))
+
+introHom :: forall f g h. (Day f g ~> h) -> f ~> g ~/> h
+introHom n f = Hom \g -> n (day (#) f g)
+
+elimHom :: forall f g h. Functor g => (f ~> g ~/> h) -> Day f g ~> h
+elimHom n = runDay \f x y -> runHom (n x) (map (flip f) y)
+
+introHom' :: forall f g. Functor f => (f ~> g) -> Identity ~> f ~/> g
+introHom' n = introHom (runDay \f (Identity a) x -> n (map (f a) x))
+
+elimHom' :: forall f g. Functor f => (Identity ~> f ~/> g) -> f ~> g
+elimHom' n fa = elimHom n (day (const id) (Identity unit) fa)
 
 -- | The composition map for the internal hom object `Hom`
 composeHom :: forall f g h. Functor f => Day (g ~/> h) (f ~/> g) ~> f ~/> h

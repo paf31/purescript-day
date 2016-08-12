@@ -115,6 +115,30 @@ uncurryHom :: forall f g h. (Functor f, Functor g) => f ~/> g ~/> h ~> (Day f g)
 
 The uncurry function for the internal hom object `Hom`
 
+#### `introHom`
+
+``` purescript
+introHom :: forall f g h. ((Day f g) ~> h) -> f ~> g ~/> h
+```
+
+#### `elimHom`
+
+``` purescript
+elimHom :: forall f g h. Functor g => (f ~> g ~/> h) -> (Day f g) ~> h
+```
+
+#### `introHom'`
+
+``` purescript
+introHom' :: forall f g. Functor f => (f ~> g) -> Identity ~> f ~/> g
+```
+
+#### `elimHom'`
+
+``` purescript
+elimHom' :: forall f g. Functor f => (Identity ~> f ~/> g) -> f ~> g
+```
+
 #### `composeHom`
 
 ``` purescript
