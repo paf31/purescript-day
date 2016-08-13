@@ -24,14 +24,14 @@ import Control.Extend (class Extend, (=>>))
 import Control.Comonad (class Comonad, extract)
 import Control.Monad.Trans (class MonadTrans)
 import Data.Functor.Pairing (type (⋈))
-import Data.Functor.Day (Day, day, runDay)
+import Data.Functor.Day (type (⊗), runDay, day)
 import Data.Identity (Identity(..), runIdentity)
 
 -- | This is the internal hom in the category of functors with Day
 -- | convolution as the monoidal tensor.
 newtype Hom f g a = Hom (forall r. f (a -> r) -> g r)
 
-infixr 8 type Hom as ⊸
+infixr 5 type Hom as ⊸
 
 hom :: forall f g a. (forall r. f (a -> r) -> g r) -> Hom f g a
 hom = Hom
@@ -40,17 +40,17 @@ runHom :: forall f g a r. Hom f g a -> f (a -> r) -> g r
 runHom (Hom f) = f
 
 -- | The curry function for the internal hom object `Hom`
-curryHom :: forall f g h. Day f g ⊸ h ~> f ⊸ g ⊸ h
+curryHom :: forall f g h. (f ⊗ g ⊸ h) ~> f ⊸ g ⊸ h
 curryHom (Hom d) = Hom \f -> Hom \g -> d (day (>>>) f g)
 
 -- | The uncurry function for the internal hom object `Hom`
-uncurryHom :: forall f g h. (Functor f, Functor g) => f ⊸ g ⊸ h ~> Day f g ⊸ h
+uncurryHom :: forall f g h. (Functor f, Functor g) => (f ⊸ g ⊸ h) ~> f ⊗ g ⊸ h
 uncurryHom d = Hom (runDay \f x y -> runHom (runHom d (map (\p q a -> f p a q) x)) (map (#) y))
 
-introHom :: forall f g h. (Day f g ~> h) -> f ~> g ⊸ h
+introHom :: forall f g h. (f ⊗ g ~> h) -> f ~> g ⊸ h
 introHom n f = Hom \g -> n (day (#) f g)
 
-elimHom :: forall f g h. Functor g => (f ~> g ⊸ h) -> Day f g ~> h
+elimHom :: forall f g h. Functor g => (f ~> g ⊸ h) -> f ⊗ g ~> h
 elimHom n = runDay \f x y -> runHom (n x) (map (flip f) y)
 
 introHom' :: forall f g. Functor f => (f ~> g) -> Identity ~> f ⊸ g
@@ -60,11 +60,11 @@ elimHom' :: forall f g. Functor f => (Identity ~> f ⊸ g) -> f ~> g
 elimHom' n fa = elimHom n (day (const id) (Identity unit) fa)
 
 -- | The composition map for the internal hom object `Hom`
-composeHom :: forall f g h. Functor f => Day (g ⊸ h) (f ⊸ g) ~> f ⊸ h
+composeHom :: forall f g h. Functor f => (g ⊸ h) ⊗ (f ⊸ g) ~> f ⊸ h
 composeHom = runDay \f gh fg -> Hom \fa -> runHom gh (runHom fg (map (\g y x -> g (f x y)) fa))
 
 -- | The evaluation map for the internal hom object `Hom`
-evalHom :: forall f g. Functor f => Day (f ⊸ g) f ~> g
+evalHom :: forall f g. Functor f => (f ⊸ g) ⊗ f ~> g
 evalHom = runDay \f d y -> runHom d (map (flip f) y)
 
 -- | `Hom` generalizes pairings which have been applied to their first argument.

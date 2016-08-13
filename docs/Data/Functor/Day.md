@@ -22,6 +22,12 @@ Functor (Day f g)
 (Comonad f) => ComonadTrans (Day f)
 ```
 
+#### `type (⊗)`
+
+``` purescript
+infixl 6 type Day as ype (⊗
+```
+
 #### `runDay`
 
 ``` purescript
@@ -41,10 +47,10 @@ Construct a value of type `Day f g a`.
 #### `dap`
 
 ``` purescript
-dap :: forall f a. Applicative f => Day f f a -> f a
+dap :: forall f. Applicative f => f ⊗ f ~> f
 ```
 
-Collapse a value of type `Day f f a` whenever `f` is `Applicative`.
+`f ⊗ f` whenever `f` is `Applicative`.
 
 #### `elimPair`
 
@@ -57,7 +63,7 @@ Eliminate a `Day` convolution of two paired functors.
 #### `pairDay`
 
 ``` purescript
-pairDay :: forall f1 f2 g1 g2. f1 ⋈ f2 -> g1 ⋈ g2 -> (Day f1 g1) ⋈ (Day f2 g2)
+pairDay :: forall f1 f2 g1 g2. f1 ⋈ f2 -> g1 ⋈ g2 -> f1 ⊗ g1 ⋈ f2 ⊗ g2
 ```
 
 Pair two `Day` convolutions when their components pair.
@@ -65,7 +71,7 @@ Pair two `Day` convolutions when their components pair.
 #### `hoistDay1`
 
 ``` purescript
-hoistDay1 :: forall f g h. (f ~> g) -> (Day f h) ~> (Day g h)
+hoistDay1 :: forall f g h. (f ~> g) -> f ⊗ h ~> g ⊗ h
 ```
 
 Hoist a natural transformation over the left hand side of a 'Day' convolution.
@@ -73,7 +79,7 @@ Hoist a natural transformation over the left hand side of a 'Day' convolution.
 #### `hoistDay2`
 
 ``` purescript
-hoistDay2 :: forall f g h. (f ~> g) -> (Day h f) ~> (Day h g)
+hoistDay2 :: forall f g h. (f ~> g) -> h ⊗ f ~> h ⊗ g
 ```
 
 Hoist a natural transformation over the left hand side of a 'Day' convolution.

@@ -25,7 +25,7 @@ convolution as the monoidal tensor.
 #### `type (⊸)`
 
 ``` purescript
-infixr 8 type Hom as ype (⊸
+infixr 5 type Hom as ype (⊸
 ```
 
 #### `hom`
@@ -43,7 +43,7 @@ runHom :: forall f g a r. Hom f g a -> f (a -> r) -> g r
 #### `curryHom`
 
 ``` purescript
-curryHom :: forall f g h. (Day f g) ⊸ h ~> f ⊸ g ⊸ h
+curryHom :: forall f g h. (f ⊗ g ⊸ h) ~> f ⊸ g ⊸ h
 ```
 
 The curry function for the internal hom object `Hom`
@@ -51,7 +51,7 @@ The curry function for the internal hom object `Hom`
 #### `uncurryHom`
 
 ``` purescript
-uncurryHom :: forall f g h. (Functor f, Functor g) => f ⊸ g ⊸ h ~> (Day f g) ⊸ h
+uncurryHom :: forall f g h. (Functor f, Functor g) => (f ⊸ g ⊸ h) ~> f ⊗ g ⊸ h
 ```
 
 The uncurry function for the internal hom object `Hom`
@@ -59,13 +59,13 @@ The uncurry function for the internal hom object `Hom`
 #### `introHom`
 
 ``` purescript
-introHom :: forall f g h. ((Day f g) ~> h) -> f ~> g ⊸ h
+introHom :: forall f g h. (f ⊗ g ~> h) -> f ~> g ⊸ h
 ```
 
 #### `elimHom`
 
 ``` purescript
-elimHom :: forall f g h. Functor g => (f ~> g ⊸ h) -> (Day f g) ~> h
+elimHom :: forall f g h. Functor g => (f ~> g ⊸ h) -> f ⊗ g ~> h
 ```
 
 #### `introHom'`
@@ -83,7 +83,7 @@ elimHom' :: forall f g. Functor f => (Identity ~> f ⊸ g) -> f ~> g
 #### `composeHom`
 
 ``` purescript
-composeHom :: forall f g h. Functor f => (Day (g ⊸ h) (f ⊸ g)) ~> f ⊸ h
+composeHom :: forall f g h. Functor f => (g ⊸ h) ⊗ (f ⊸ g) ~> f ⊸ h
 ```
 
 The composition map for the internal hom object `Hom`
@@ -91,7 +91,7 @@ The composition map for the internal hom object `Hom`
 #### `evalHom`
 
 ``` purescript
-evalHom :: forall f g. Functor f => (Day (f ⊸ g) f) ~> g
+evalHom :: forall f g. Functor f => (f ⊸ g) ⊗ f ~> g
 ```
 
 The evaluation map for the internal hom object `Hom`
