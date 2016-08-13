@@ -3,6 +3,7 @@
 
 module Data.Functor.Day.Hom
   ( Hom
+  , type (⊸)
   , runHom
   , hom
   , curryHom

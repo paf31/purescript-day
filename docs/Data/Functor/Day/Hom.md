@@ -22,6 +22,12 @@ convolution as the monoidal tensor.
 (Comonad f) => MonadTrans (Hom f)
 ```
 
+#### `type (⊸)`
+
+``` purescript
+infixr 8 type Hom as ype (⊸
+```
+
 #### `hom`
 
 ``` purescript
