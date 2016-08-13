@@ -14,6 +14,7 @@ module Data.Functor.Day.Hom
   , elimHom
   , elimHom'
   , pairingHom
+  , pairHom
   ) where
 
 import Prelude
@@ -23,7 +24,7 @@ import Control.Comonad (class Comonad, extract)
 import Control.Monad.Trans (class MonadTrans)
 import Data.Functor.Pairing (type (⋈))
 import Data.Functor.Day (Day, day, runDay)
-import Data.Identity (Identity(..))
+import Data.Identity (Identity(..), runIdentity)
 
 -- | This is the internal hom in the category of functors with Day
 -- | convolution as the monoidal tensor.
@@ -68,6 +69,10 @@ evalHom = runDay \f d y -> runHom d (map (flip f) y)
 -- | `Hom` generalizes pairings which have been applied to their first argument.
 pairingHom :: forall f g. f ⋈ g -> f ~> g ~/> Identity
 pairingHom p = introHom (runDay \f x y -> Identity (p f x y))
+
+-- | Every functor `f` pairs with `f ~/> Identity`.
+pairHom :: forall f. Functor f => f ⋈ (f ~/> Identity)
+pairHom f fa h = runIdentity (runHom h (map f fa))
 
 instance functorHom :: Functor f => Functor (f ~/> g) where
   map f d = Hom \fa -> runHom d (map (_ <<< f) fa)

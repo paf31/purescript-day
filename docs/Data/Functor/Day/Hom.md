@@ -85,4 +85,20 @@ evalHom :: forall f g. Functor f => (Day (f ~/> g) f) ~> g
 
 The evaluation map for the internal hom object `Hom`
 
+#### `pairingHom`
+
+``` purescript
+pairingHom :: forall f g. f ⋈ g -> f ~> g ~/> Identity
+```
+
+`Hom` generalizes pairings which have been applied to their first argument.
+
+#### `pairHom`
+
+``` purescript
+pairHom :: forall f. Functor f => f ⋈ (f ~/> Identity)
+```
+
+Every functor `f` pairs with `f ~/> Identity`.
+
 
