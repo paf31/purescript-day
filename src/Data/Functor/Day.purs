@@ -16,9 +16,9 @@ module Data.Functor.Day
 
 import Prelude
 
-import Control.Extend (class Extend, (=>>), duplicate)
+import Control.Extend (class Extend, duplicate)
 import Control.Comonad (class Comonad, extract)
-import Control.Comonad.Trans (class ComonadTrans)
+import Control.Comonad.Trans.Class (class ComonadTrans)
 import Data.Exists (Exists, mkExists, runExists)
 import Data.Functor.Pairing (type (⋈))
 import Data.Tuple (Tuple(..))
