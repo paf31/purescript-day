@@ -44,7 +44,7 @@ curryHom :: forall f g h. (f ⊗ g ⊸ h) ~> f ⊸ g ⊸ h
 curryHom (Hom d) = Hom \f -> Hom \g -> d (day (>>>) f g)
 
 -- | The uncurry function for the internal hom object `Hom`
-uncurryHom :: forall f g h. (Functor f, Functor g) => (f ⊸ g ⊸ h) ~> f ⊗ g ⊸ h
+uncurryHom :: forall f g h. Functor f => Functor g => (f ⊸ g ⊸ h) ~> f ⊗ g ⊸ h
 uncurryHom d = Hom (runDay \f x y -> runHom (runHom d (map (\p q a -> f p a q) x)) (map (#) y))
 
 introHom :: forall f g h. (f ⊗ g ~> h) -> f ~> g ⊸ h

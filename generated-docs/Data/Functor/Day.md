@@ -31,7 +31,7 @@ infixl 6 type Day as ype (⊗
 #### `runDay`
 
 ``` purescript
-runDay :: forall f g a r. (forall y. forall x. (x -> y -> a) -> f x -> g y -> r) -> Day f g a -> r
+runDay :: forall f g a r. (forall x y. (x -> y -> a) -> f x -> g y -> r) -> Day f g a -> r
 ```
 
 Unpack a value of type `Day f g a`.
