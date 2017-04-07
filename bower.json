@@ -16,7 +16,7 @@
     "purescript-exists": "^3.0.0",
     "purescript-free": "^4.0.0",
     "purescript-functors": "^2.0.0",
-    "purescript-pairing": "???",
+    "purescript-pairing": "^4.0.0",
     "purescript-transformers": "^3.0.0"
   },
   "devDependencies": {
