@@ -51,7 +51,7 @@ The curry function for the internal hom object `Hom`
 #### `uncurryHom`
 
 ``` purescript
-uncurryHom :: forall f g h. (Functor f, Functor g) => (f ⊸ g ⊸ h) ~> f ⊗ g ⊸ h
+uncurryHom :: forall f g h. Functor f => Functor g => (f ⊸ g ⊸ h) ~> f ⊗ g ⊸ h
 ```
 
 The uncurry function for the internal hom object `Hom`
