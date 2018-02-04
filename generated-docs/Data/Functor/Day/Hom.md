@@ -28,16 +28,16 @@ convolution as the monoidal tensor.
 infixr 5 type Hom as ype (⊸
 ```
 
-#### `hom`
-
-``` purescript
-hom :: forall f g a. (forall r. f (a -> r) -> g r) -> Hom f g a
-```
-
 #### `runHom`
 
 ``` purescript
 runHom :: forall f g a r. Hom f g a -> f (a -> r) -> g r
+```
+
+#### `hom`
+
+``` purescript
+hom :: forall f g a. (forall r. f (a -> r) -> g r) -> Hom f g a
 ```
 
 #### `curryHom`
@@ -56,30 +56,6 @@ uncurryHom :: forall f g h. Functor f => Functor g => (f ⊸ g ⊸ h) ~> f ⊗ g
 
 The uncurry function for the internal hom object `Hom`
 
-#### `introHom`
-
-``` purescript
-introHom :: forall f g h. (f ⊗ g ~> h) -> f ~> g ⊸ h
-```
-
-#### `elimHom`
-
-``` purescript
-elimHom :: forall f g h. Functor g => (f ~> g ⊸ h) -> f ⊗ g ~> h
-```
-
-#### `introHom'`
-
-``` purescript
-introHom' :: forall f g. Functor f => (f ~> g) -> Identity ~> f ⊸ g
-```
-
-#### `elimHom'`
-
-``` purescript
-elimHom' :: forall f g. Functor f => (Identity ~> f ⊸ g) -> f ~> g
-```
-
 #### `composeHom`
 
 ``` purescript
@@ -95,6 +71,30 @@ evalHom :: forall f g. Functor f => (f ⊸ g) ⊗ f ~> g
 ```
 
 The evaluation map for the internal hom object `Hom`
+
+#### `introHom`
+
+``` purescript
+introHom :: forall f g h. (f ⊗ g ~> h) -> f ~> g ⊸ h
+```
+
+#### `introHom'`
+
+``` purescript
+introHom' :: forall f g. Functor f => (f ~> g) -> Identity ~> f ⊸ g
+```
+
+#### `elimHom`
+
+``` purescript
+elimHom :: forall f g h. Functor g => (f ~> g ⊸ h) -> f ⊗ g ~> h
+```
+
+#### `elimHom'`
+
+``` purescript
+elimHom' :: forall f g. Functor f => (Identity ~> f ⊸ g) -> f ~> g
+```
 
 #### `pairingHom`
 

@@ -84,4 +84,46 @@ hoistDay2 :: forall f g h. (f ~> g) -> h ⊗ f ~> h ⊗ g
 
 Hoist a natural transformation over the left hand side of a 'Day' convolution.
 
+#### `introDay1`
+
+``` purescript
+introDay1 :: forall f. f ~> Identity ⊗ f
+```
+
+#### `introDay2`
+
+``` purescript
+introDay2 :: forall f. f ~> f ⊗ Identity
+```
+
+#### `elimDay1`
+
+``` purescript
+elimDay1 :: forall f. Functor f => Identity ⊗ f ~> f
+```
+
+#### `elimDay2`
+
+``` purescript
+elimDay2 :: forall f. Functor f => f ⊗ Identity ~> f
+```
+
+#### `symmDay`
+
+``` purescript
+symmDay :: forall f g. f ⊗ g ~> g ⊗ f
+```
+
+#### `assoclDay`
+
+``` purescript
+assoclDay :: forall f g h. f ⊗ (g ⊗ h) ~> (f ⊗ g) ⊗ h
+```
+
+#### `assocrDay`
+
+``` purescript
+assocrDay :: forall f g h. (f ⊗ g) ⊗ h ~> f ⊗ (g ⊗ h)
+```
+
 

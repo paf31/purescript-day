@@ -12,15 +12,23 @@ module Data.Functor.Day
   , pairDay
   , hoistDay1
   , hoistDay2
+  , introDay1
+  , introDay2
+  , elimDay1
+  , elimDay2
+  , symmDay
+  , assoclDay
+  , assocrDay
   ) where
 
 import Prelude
 
-import Control.Extend (class Extend, duplicate)
 import Control.Comonad (class Comonad, extract)
 import Control.Comonad.Trans.Class (class ComonadTrans)
+import Control.Extend (class Extend, duplicate)
 import Data.Exists (Exists, mkExists, runExists)
 import Data.Functor.Pairing (type (⋈))
+import Data.Identity (Identity(..))
 import Data.Tuple (Tuple(..))
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
@@ -64,6 +72,27 @@ hoistDay1 n = runDay \f x y -> day f (n x) y
 -- | Hoist a natural transformation over the left hand side of a 'Day' convolution.
 hoistDay2 :: forall f g h. (f ~> g) -> h ⊗ f ~> h ⊗ g
 hoistDay2 n = runDay \f x y -> day f x (n y)
+
+introDay1 :: forall f. f ~> Identity ⊗ f
+introDay1 = day id (Identity id)
+
+introDay2 :: forall f. f ~> f ⊗ Identity
+introDay2 f = day (#) f (Identity id)
+
+elimDay1 :: forall f. Functor f => Identity ⊗ f ~> f
+elimDay1 = runDay \f (Identity x) y -> f x <$> y
+
+elimDay2 :: forall f. Functor f => f ⊗ Identity ~> f
+elimDay2 = runDay \f x (Identity y) -> flip f y <$> x
+
+symmDay :: forall f g. f ⊗ g ~> g ⊗ f
+symmDay = runDay \f x y -> day (flip f) y x
+
+assoclDay :: forall f g h. f ⊗ (g ⊗ h) ~> (f ⊗ g) ⊗ h
+assoclDay = runDay \phi f x -> runDay (\psi g h -> day id (day (\a b c -> phi a (psi b c)) f g) h) x
+
+assocrDay :: forall f g h. (f ⊗ g) ⊗ h ~> f ⊗ (g ⊗ h)
+assocrDay = runDay \phi x h -> runDay (\psi f g -> day (#) f (day (\a b c -> phi (psi c a) b) g h)) x
 
 instance functorDay :: Functor (Day f g) where
   map f = runDay \get fx gy -> day (\x y -> f (get x y)) fx gy
