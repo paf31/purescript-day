@@ -49,7 +49,7 @@ day :: forall f g a x y. (x -> y -> a) -> f x -> g y -> Day f g a
 day get fx gy = Day (mkExists (Day2 (mkExists (Day1 get fx gy))))
 
 -- | `f ⊗ f` whenever `f` is `Applicative`.
-dap :: forall f. Applicative f => f ⊗ f ~> f
+dap :: forall f. Apply f => f ⊗ f ~> f
 dap = runDay \get fx gy -> get <$> fx <*> gy
 
 -- | Eliminate a `Day` convolution of two paired functors.
