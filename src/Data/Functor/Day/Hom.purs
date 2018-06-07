@@ -57,7 +57,7 @@ introHom' :: forall f g. Functor f => (f ~> g) -> Identity ~> f ⊸ g
 introHom' n = introHom (runDay \f (Identity a) x -> n (map (f a) x))
 
 elimHom' :: forall f g. Functor f => (Identity ~> f ⊸ g) -> f ~> g
-elimHom' n fa = elimHom n (day (const id) (Identity unit) fa)
+elimHom' n fa = elimHom n (day (const identity) (Identity unit) fa)
 
 -- | The composition map for the internal hom object `Hom`
 composeHom :: forall f g h. Functor f => (g ⊸ h) ⊗ (f ⊸ g) ~> f ⊸ h

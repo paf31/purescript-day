@@ -5,11 +5,8 @@ node_js: stable
 install:
   - npm install -g bower
   - npm install
-  - bower install
 script:
+  - bower install --production
   - npm run -s build
-after_success:
-- >-
-  test $TRAVIS_TAG &&
-  echo $GITHUB_TOKEN | pulp login &&
-  echo y | pulp publish --no-push
+  - bower install
+  - npm run -s test

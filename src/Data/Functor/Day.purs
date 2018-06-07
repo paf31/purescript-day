@@ -74,10 +74,10 @@ hoistDay2 :: forall f g h. (f ~> g) -> h ⊗ f ~> h ⊗ g
 hoistDay2 n = runDay \f x y -> day f x (n y)
 
 introDay1 :: forall f. f ~> Identity ⊗ f
-introDay1 = day id (Identity id)
+introDay1 = day identity (Identity identity)
 
 introDay2 :: forall f. f ~> f ⊗ Identity
-introDay2 f = day (#) f (Identity id)
+introDay2 f = day (#) f (Identity identity)
 
 elimDay1 :: forall f. Functor f => Identity ⊗ f ~> f
 elimDay1 = runDay \f (Identity x) y -> f x <$> y
@@ -89,7 +89,7 @@ symmDay :: forall f g. f ⊗ g ~> g ⊗ f
 symmDay = runDay \f x y -> day (flip f) y x
 
 assoclDay :: forall f g h. f ⊗ (g ⊗ h) ~> (f ⊗ g) ⊗ h
-assoclDay = runDay \phi f x -> runDay (\psi g h -> day id (day (\a b c -> phi a (psi b c)) f g) h) x
+assoclDay = runDay \phi f x -> runDay (\psi g h -> day identity (day (\a b c -> phi a (psi b c)) f g) h) x
 
 assocrDay :: forall f g h. (f ⊗ g) ⊗ h ~> f ⊗ (g ⊗ h)
 assocrDay = runDay \phi x h -> runDay (\psi f g -> day (#) f (day (\a b c -> phi (psi c a) b) g h)) x
