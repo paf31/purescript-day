@@ -33,10 +33,10 @@ import Data.Tuple (Tuple(..))
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
 
-data Day2 f g a x = Day2 (Exists (Day1 f g a x))
+newtype Day2 f g a x = Day2 (Exists (Day1 f g a x))
 
 -- | Day convolution of two covariant functors
-data Day f g a = Day (Exists (Day2 f g a))
+newtype Day f g a = Day (Exists (Day2 f g a))
 
 infixl 6 type Day as ⊗
 
