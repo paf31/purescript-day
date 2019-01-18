@@ -19,6 +19,7 @@ module Data.Functor.Day
   , symmDay
   , assoclDay
   , assocrDay
+  , tupleDay
   ) where
 
 import Prelude
@@ -30,6 +31,7 @@ import Data.Exists (Exists, mkExists, runExists)
 import Data.Functor.Pairing (type (⋈))
 import Data.Identity (Identity(..))
 import Data.Tuple (Tuple(..))
+import Data.Foldable (class Foldable, foldMap, foldrDefault, foldlDefault)
 
 data Day1 f g a x y = Day1 (x -> y -> a) (f x) (g y)
 
@@ -94,6 +96,11 @@ assoclDay = runDay \phi f x -> runDay (\psi g h -> day identity (day (\a b c -> 
 assocrDay :: forall f g h. (f ⊗ g) ⊗ h ~> f ⊗ (g ⊗ h)
 assocrDay = runDay \phi x h -> runDay (\psi f g -> day (#) f (day (\a b c -> phi (psi c a) b) g h)) x
 
+tupleDay :: forall f g x y . f x -> g y -> Day f g (Tuple x y)
+tupleDay = day Tuple
+
+infixr 4 tupleDay as <⊗>
+
 instance functorDay :: Functor (Day f g) where
   map f = runDay \get fx gy -> day (\x y -> f (get x y)) fx gy
 
@@ -117,3 +124,9 @@ instance comonadDay :: (Comonad f, Comonad g) => Comonad (Day f g) where
 
 instance comonadTrans :: Comonad f => ComonadTrans (Day f) where
   lower = runDay \get fx gy -> get (extract fx) <$> gy
+
+instance foldableDay :: (Foldable f, Foldable g) => Foldable (Day f g) where
+  foldMap t = runDay \get fx gy -> foldMap (\x -> foldMap (\y -> t (get x y)) gy) fx
+  foldr t u d = foldrDefault t u d
+  foldl t u d = foldlDefault t u d
+
